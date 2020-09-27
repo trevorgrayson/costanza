@@ -59,7 +59,6 @@ void printWifiStatus(bool online) {
   } else {
     display.drawString(118, 16, "o");
   }
-
 }
 
 void viewRender() { display.display(); }

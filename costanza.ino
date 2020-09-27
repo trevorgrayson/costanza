@@ -1,7 +1,4 @@
 #define UPDATE_INTERVAL 5000
-// async - non blocking
-// multiple concerns
-// CQRS MVP patterns
 
 struct State {
   long frame = 0;
@@ -13,16 +10,27 @@ struct State {
 
 void start() {
   Serial.begin(115200);
+  print(state.msg);
 }
+
+void (*setups[]) () = { 
+  viewSetup, start, viewRender 
+};
 
 void tick() {
-  print("hello");
-}
-
-void update() { // rename to poll
+  state.dirty = true;
 }
 
 void render() {
+  print("hello4");
 }
+
+void (*befores[]) () = { 
+  clear
+};
+
+void (*afters[]) () = { 
+  viewRender
+};
 
 #include "framework/framework.h"
