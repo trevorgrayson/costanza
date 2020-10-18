@@ -2,7 +2,7 @@
 # https://arduino.github.io/arduino-cli/getting-started/
 # SSD1306 code from: https://github.com/ThingPulse/esp8266-oled-ssd1306
 PROJECT=phone.bin
-BUILD_DIR=build/Heltec-esp8266.esp8266.generic
+BUILD_DIR=build
 BAUD?=115200
 PORT?=/dev/cu.usbserial-01D9E3DC
 ARDUINO_CONF=arduino-cli.yaml
@@ -13,12 +13,15 @@ SRCS=$(wildcard *.c **/*.c)
 
 OBJS=$(SRCS:.c=.o)
 	
+server:
+	python3 -s -m server
+
 upload: compile
-	$(ACLI) upload -p $(PORT) --fqbn Heltec-esp8266:esp8266:generic
+	$(ACLI) upload -p $(PORT) --fqbn esp8266:esp8266:generic
 
 compile:
 	mkdir -p $(BUILD_DIR)
-	$(ACLI) compile --output-dir $(BUILD_DIR) --fqbn Heltec-esp8266:esp8266:generic 
+	$(ACLI) compile --output-dir $(BUILD_DIR) --fqbn esp8266:esp8266:generic 
 	@ # heltec:esp8266:wifi_kit_8 
 
 setup:
@@ -50,3 +53,4 @@ render:
 clean:
 	find . -name '*.o' -delete
 	find images -name '*.xbm' -delete
+	rm -rf build
