@@ -1,5 +1,6 @@
 /**
    httpUpdate.ino
+   MAC: a0:20:a6:27:0b:b2
 
     Created on: 27.11.2015
 
@@ -11,11 +12,10 @@
 #include <ESP8266WiFiMulti.h>
 
 #include <ESP8266HTTPClient.h>
-#include <ESP8266httpUpdate.h>
 
 #ifndef APSSID
-#define APSSID "APSSID"
-#define APPSK  "APPSK"
+#define APSSID "iou"
+#define APPSK  "iou"
 #endif
 
 ESP8266WiFiMulti WiFiMulti;
@@ -23,7 +23,13 @@ ESP8266WiFiMulti WiFiMulti;
 void setup() {
 
   Serial.begin(115200);
-  // Serial.setDebugOutput(true);
+  Serial.setDebugOutput(true);
+  viewSetup();
+
+  clear();
+  print("bootloading...");
+  viewRender();
+  delay(4000);
 
   Serial.println();
   Serial.println();
@@ -36,65 +42,52 @@ void setup() {
   }
 
   WiFi.mode(WIFI_STA);
-  WiFiMulti.addAP(APSSID, APPSK);
-
-
+  WiFiMulti.addAP("dont you know", APPSK);
+  Serial.println("AP added!!!");
+  print("starting...");
+  viewRender();
+  delay(5000);
 }
 
-void update_started() {
+void updateStarted() {
   Serial.println("CALLBACK:  HTTP update process started");
+  clear();
+  print("started");
+  viewRender();
 }
 
-void update_finished() {
+void updateFinished() {
   Serial.println("CALLBACK:  HTTP update process finished");
+  clear();
+  print("finished");
+  viewRender();
 }
 
-void update_progress(int cur, int total) {
+void updateProgress(int cur, int total) {
   Serial.printf("CALLBACK:  HTTP update process at %d of %d bytes...\n", cur, total);
+  clear();
+  print("updating");
+  viewRender();
 }
 
-void update_error(int err) {
+void updateError(int err) {
   Serial.printf("CALLBACK:  HTTP update fatal error code %d\n", err);
+  clear();
+  print("fatal");
+  viewRender();
 }
-
 
 void loop() {
+  clear();
   // wait for WiFi connection
+  Serial.print(".");
   if ((WiFiMulti.run() == WL_CONNECTED)) {
-
-    WiFiClient client;
-
-    // The line below is optional. It can be used to blink the LED on the board during flashing
-    // The LED will be on during download of one buffer of data from the network. The LED will
-    // be off during writing that buffer to flash
-    // On a good connection the LED should flash regularly. On a bad connection the LED will be
-    // on much longer than it will be off. Other pins than LED_BUILTIN may be used. The second
-    // value is used to put the LED on. If the LED is on with HIGH, that value should be passed
-    ESPhttpUpdate.setLedPin(LED_BUILTIN, LOW);
-
-    // Add optional callback notifiers
-    ESPhttpUpdate.onStart(update_started);
-    ESPhttpUpdate.onEnd(update_finished);
-    ESPhttpUpdate.onProgress(update_progress);
-    ESPhttpUpdate.onError(update_error);
-
-    t_httpUpdate_return ret = ESPhttpUpdate.update(client, "http://server/file.bin");
-    // Or:
-    //t_httpUpdate_return ret = ESPhttpUpdate.update(client, "server", 80, "file.bin");
-
-    switch (ret) {
-      case HTTP_UPDATE_FAILED:
-        Serial.printf("HTTP_UPDATE_FAILD Error (%d): %s\n", ESPhttpUpdate.getLastError(), ESPhttpUpdate.getLastErrorString().c_str());
-        break;
-
-      case HTTP_UPDATE_NO_UPDATES:
-        Serial.println("HTTP_UPDATE_NO_UPDATES");
-        break;
-
-      case HTTP_UPDATE_OK:
-        Serial.println("HTTP_UPDATE_OK");
-        break;
-    }
+    updateFirmware();
+  } else {
+      clear();
+      print("nah");
+      viewRender();
   }
+  Serial.println("!");
 }
 

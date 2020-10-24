@@ -2,9 +2,11 @@
 # https://arduino.github.io/arduino-cli/getting-started/
 # SSD1306 code from: https://github.com/ThingPulse/esp8266-oled-ssd1306
 PROJECT=phone.bin
-BUILD_DIR=build
+# BUILD_DIR=build/Heltec-esp8266.esp8266.generic
+BUILD_DIR=build/esp8266.esp8266.generic
+BIN_DIR=./binaries
 BAUD?=115200
-PORT?=/dev/cu.usbserial-01D9E3DC
+PORT?=/dev/cu.SLAB_USBtoUART
 ARDUINO_CONF=arduino-cli.yaml
 ACLI=arduino-cli
 # --config-file $(ARDUINO_CONF)
@@ -54,3 +56,5 @@ clean:
 	find . -name '*.o' -delete
 	find images -name '*.xbm' -delete
 	rm -rf build
+
+.PHONY: server
