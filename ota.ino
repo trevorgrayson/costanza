@@ -12,27 +12,24 @@
 #include <ESP8266WiFiMulti.h>
 
 #include <ESP8266HTTPClient.h>
+#include "pins.h"
 
 #ifndef APSSID
-#define APSSID "iou"
-#define APPSK  "iou"
+#define APSSID ""
+#define APPSK  ""
 #endif
 
 ESP8266WiFiMulti WiFiMulti;
 
 void setup() {
-
   Serial.begin(115200);
-  Serial.setDebugOutput(true);
+  //Serial.setDebugOutput(true);
   viewSetup();
 
   clear();
-  print("bootloading...");
+  print("hello.");
   viewRender();
-  delay(4000);
 
-  Serial.println();
-  Serial.println();
   Serial.println();
 
   for (uint8_t t = 4; t > 0; t--) {
@@ -42,52 +39,31 @@ void setup() {
   }
 
   WiFi.mode(WIFI_STA);
-  WiFiMulti.addAP("dont you know", APPSK);
+  WiFiMulti.addAP(APSSID, APPSK);
   Serial.println("AP added!!!");
   print("starting...");
   viewRender();
-  delay(5000);
 }
 
-void updateStarted() {
-  Serial.println("CALLBACK:  HTTP update process started");
-  clear();
-  print("started");
-  viewRender();
-}
-
-void updateFinished() {
-  Serial.println("CALLBACK:  HTTP update process finished");
-  clear();
-  print("finished");
-  viewRender();
-}
-
-void updateProgress(int cur, int total) {
-  Serial.printf("CALLBACK:  HTTP update process at %d of %d bytes...\n", cur, total);
-  clear();
-  print("updating");
-  viewRender();
-}
-
-void updateError(int err) {
-  Serial.printf("CALLBACK:  HTTP update fatal error code %d\n", err);
-  clear();
-  print("fatal");
-  viewRender();
+bool updateChecked = false;
+bool isConnected() {
+  return WiFiMulti.run() == WL_CONNECTED;
 }
 
 void loop() {
-  clear();
-  // wait for WiFi connection
-  Serial.print(".");
-  if ((WiFiMulti.run() == WL_CONNECTED)) {
+  if (!updateChecked && isConnected()) {
+    updateChecked = true;
+    Serial.println("checking for updates.");
+    clear();
+    print("found update...");
+    viewRender();
     updateFirmware();
-  } else {
-      clear();
-      print("nah");
-      viewRender();
-  }
-  Serial.println("!");
+    clear();
+    print("done.");
+    viewRender();
+    return;
+  } 
+  clear();
+  print("v1.0.5");
+  viewRender();
 }
-

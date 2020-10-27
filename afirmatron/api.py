@@ -1,37 +1,66 @@
-import logging
 import os
+from os import environ
+import logging
 import hashlib
+import json
 from flask import (
     Blueprint, request, Response, send_from_directory,
     make_response
 )
 
 from afirmatron import File 
-from afirmatron.version import should_update
-
-BIN_DIR='/Users/trevorgrayson/projects/esp8266/ota/server/static'
+from .binary import BIN_DIR
 
 routes = Blueprint('afirmatron', __name__)
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-@routes.route('/update')
-def update():
-    logger.info(request.headers)
-    if should_update(version=0):
-        # filename=os.path.join(BIN_DIR, 'ota.ino.bin')
-        binary = File.from_filename(HTTP_X_ESP8266_STA_MAC=request.headers.get('X-Esp8266-Sta-Mac'))
-        return make_response(send_from_directory(BIN_DIR, binary.filename),
-                             200, response_headers(binary))
+THINGS = {}
 
-    return 'current', 305
+
+def device_name(request):
+    return request.headers.get('X-Esp8266-Sta-Mac')
+
+
+def md5sum(request):
+    return  request.headers.get('X-Esp8266-Sketch-Md5')
+
+
+@routes.route('/')
+def index():
+    return json.dumps(THINGS)
+
+
+def should_update(dname, md5):
+    return THINGS[dname] != md5
     
 
-@routes.route('/update/<string:device_name>', methods=["POST"])
-def upload(device_name):
+@routes.route('/update')
+def update():
+    dname = device_name(request)
+    md5 = md5sum(request)
+
+    THINGS[dname] = THINGS.get(dname)
+    logger.info(request.headers)
+    if should_update(dname, md5):
+        try:
+            binary = File.from_filename(dname)
+            THINGS[dname] = binary.md5
+            return make_response(send_from_directory(BIN_DIR, binary.filename),
+                                 200, response_headers(binary))
+        except FileNotFoundError:
+            return 'Not Found.', 404
+
+    return 'current', 304
+    
+
+@routes.route('/update/<string:dname>', methods=["POST"])
+def upload(dname):
     octet = request.get_data()
-    File.save(device_name, octet)
+    binary = File.save(dname, octet)
+    THINGS[dname] = binary.md5
     return 'ok', 201
+
 
 def response_headers(binary):
     filebody = open(BIN_DIR + "/" + binary.filename, 'rb').read()
@@ -44,14 +73,3 @@ def response_headers(binary):
     }
     logger.info(headers)
     return headers
-
-# [HTTP_USER_AGENT] => ESP8266-http-Update
-# [HTTP_X_ESP8266_STA_MAC] => 18:FE:AA:AA:AA:AA
-# [HTTP_X_ESP8266_AP_MAC] => 1A:FE:AA:AA:AA:AA
-# [HTTP_X_ESP8266_FREE_SPACE] => 671744
-# [HTTP_X_ESP8266_SKETCH_SIZE] => 373940
-# [HTTP_X_ESP8266_SKETCH_MD5] => a56f8ef78a0bebd812f62067daf1408a
-# [HTTP_X_ESP8266_CHIP_SIZE] => 4194304
-# [HTTP_X_ESP8266_SDK_VERSION] => 1.3.0
-# [HTTP_X_ESP8266_VERSION] => DOOR-7-g14f53a19
-
