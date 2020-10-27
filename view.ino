@@ -26,7 +26,7 @@ void viewSetup() {
   display.init();
   display.flipScreenVertically();
   display.displayOn();
-  display.setFont(ArialMT_Plain_10); // 16
+  display.setFont(ArialMT_Plain_24); // 10 16 24
   display.setTextAlignment(TEXT_ALIGN_LEFT);
 }
 

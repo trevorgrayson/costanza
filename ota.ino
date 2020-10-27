@@ -20,10 +20,12 @@
 #endif
 
 ESP8266WiFiMulti WiFiMulti;
+bool updateChecked = false;
 
 void setup() {
   Serial.begin(115200);
   //Serial.setDebugOutput(true);
+  updateChecked = false;
   viewSetup();
 
   clear();
@@ -45,7 +47,6 @@ void setup() {
   viewRender();
 }
 
-bool updateChecked = false;
 bool isConnected() {
   return WiFiMulti.run() == WL_CONNECTED;
 }
@@ -58,12 +59,8 @@ void loop() {
     print("found update...");
     viewRender();
     updateFirmware();
-    clear();
-    print("done.");
-    viewRender();
-    return;
   } 
   clear();
-  print("v1.0.5");
+  print("v1.0.19");
   viewRender();
 }
