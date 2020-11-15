@@ -4,7 +4,7 @@
 PROJECT=phone.bin
 BUILD_DIR=build/Heltec-esp8266.esp8266.generic
 BAUD?=115200
-PORT?=/dev/cu.usbserial-01D9E3DC
+PORT?=/dev/cu.SLAB_USBtoUART
 ARDUINO_CONF=arduino-cli.yaml
 ACLI=arduino-cli
 # --config-file $(ARDUINO_CONF)
@@ -46,6 +46,8 @@ monitor:
 render:
 	mogrify -resize 14x14 +dither -format xbm images/*.png
 	cat images/*.xbm > images.h
+
+test: compile
 
 clean:
 	find . -name '*.o' -delete

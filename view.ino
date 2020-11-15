@@ -1,7 +1,12 @@
-#include <Wire.h>               // Only needed for Arduino 1.6.5 and earlier
+#include "SSD1306.h"        // legacy: #include "SSD1306.h"
 #include "SSD1306Wire.h"        // legacy: #include "SSD1306.h"
+#include "images.h"
+#include "DinoRun/state.h"
 
-SSD1306Wire display(0x3c, SDA, SCL, GEOMETRY_128_32);  // ADDRESS, SDA, SCL, OLEDDISPLAY_GEOMETRY  -  Extra param required for 128x32 displays.
+#define CACTI_COUNT 2
+SSD1306Wire display(0x3c, SDA, SCL, 
+                    GEOMETRY_128_32);  
+// ADDRESS, SDA, SCL, OLEDDISPLAY_GEOMETRY  -  Extra param required for 128x32 displays.
 
 int counter = 0;
 
@@ -38,9 +43,9 @@ void printOn(String s, int line) {
   display.drawString(10*line, 0, s);
 }
 
-void hiscore(long score) {
+void showHiScore(State state) {
   //display.setTextAlignment(TEXT_ALIGN_RIGHT);
-  sprintf(buffer, format, score);
+  sprintf(buffer, format, state.score);
   display.drawString(80, 0, (String)buffer);
   //display.setTextAlignment(TEXT_ALIGN_LEFT);
 }
@@ -59,7 +64,57 @@ void printWifiStatus(bool online) {
   } else {
     display.drawString(118, 16, "o");
   }
+
 }
 
-void viewRender() { display.display(); }
-void clear()      { display.clear();   }
+void viewRender()      { display.display(); }
+void clear()           { display.clear(); }
+
+/*
+ * dinorun
+  dinorun(state);
+ */
+int HEIGHT = 32;
+int top;
+
+int sprites[CACTI_COUNT] = {0,0};
+
+void dinorun(State *state) {
+  state->frame++;
+  if (!state->flash) state->score++;
+}
+
+void dinoView(State state, int color) {
+  display.setColor((OLEDDISPLAY_COLOR)color);
+  //showHiScore(state);
+  dinosaur(state);
+  cacti(state);
+}
+
+void dinosaur(State state) {
+  bool jump = state.flash;
+  if (jump) top = 0; 
+  else top = HEIGHT - 14;
+  display.drawXbm(0, top, 
+                  14, 14, 
+                  dinosaur_bits);
+}
+
+void cactus(int16_t offset) {
+  display.drawXbm(offset, (HEIGHT-cactus_height), 
+                  cactus_width, cactus_height, 
+                  cactus_bits);
+}
+
+void cacti(State state) {
+    for(int x=0; x<CACTI_COUNT; x++) {
+      if(sprites[x] > 0) {
+        sprites[x] = sprites[x] - 1;
+        cactus(sprites[x]);
+      } else {
+        if(state.frame%50==0 && sprites[x+1] == 0) {
+            sprites[x] = 120;
+        }
+      }
+    }
+}
