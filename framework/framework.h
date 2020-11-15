@@ -4,12 +4,7 @@ void (*frameworkSetups[]) () = {
   cronSetup
 };
 
-
-bool shouldRender(State state) {
-  bool changed = state.dirty;
-  state.dirty = false;
-  return changed;
-}
+bool shouldRender();
 
 void setup() {
   size_t n = sizeof(setups) / sizeof(setups[0]);
@@ -39,7 +34,7 @@ void runAfters() {
 void loop() {
   runBefores();
   tick();  // runs every cycle
-  // update: heavy requests, web polling => cron schedule
-  if (shouldRender(state)) render(); // should update display
+  //// update: heavy requests, web polling => cron schedule
+  if (shouldRender()) render(); // should update display
   runAfters();
 }

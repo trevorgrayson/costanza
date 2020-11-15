@@ -59,7 +59,7 @@ render:
 	mogrify -resize 14x14 +dither -format xbm images/*.png
 	cat images/*.xbm > images.h
 
-test:
+test: compile
 	python3 -m pytest tests
 
 clean:
