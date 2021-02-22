@@ -2,7 +2,7 @@
 # https://arduino.github.io/arduino-cli/getting-started/
 # SSD1306 code from: https://github.com/ThingPulse/esp8266-oled-ssd1306
 PROJECT=phone.bin
-BUILD_DIR=build/Heltec-esp8266.esp8266.generic
+BUILD_DIR=build/esp32.esp32.ttgo-t1
 BAUD?=115200
 PORT?=/dev/cu.SLAB_USBtoUART
 ARDUINO_CONF=arduino-cli.yaml
@@ -14,21 +14,17 @@ SRCS=$(wildcard *.c **/*.c)
 OBJS=$(SRCS:.c=.o)
 	
 upload: compile
-	$(ACLI) upload -p $(PORT) --fqbn Heltec-esp8266:esp8266:generic
+	$(ACLI) upload -p $(PORT) --fqbn esp32:esp32:ttgo-t1
 
 compile:
 	mkdir -p $(BUILD_DIR)
-	$(ACLI) compile --output-dir $(BUILD_DIR) --fqbn Heltec-esp8266:esp8266:generic 
-	@ # heltec:esp8266:wifi_kit_8 
+	$(ACLI) compile --output-dir $(BUILD_DIR) --fqbn esp32:esp32:ttgo-t1
 
 setup:
 ifeq (,$(wildcard $(HOME)/.arduino15/arduino-cli.yaml))
 	$(ACLI) config init
 endif
-	$(ACLI) core update-index --additional-urls https://arduino.esp8266.com/stable/package_esp8266com_index.json
-	$(ACLI) core update-index --additional-urls https://github.com/Heltec-Aaron-Lee/WiFi_Kit_series/releases/download/0.0.1/package_heltec_esp8266_index.json
-	$(ACLI) core install esp8266:esp8266
-	$(ACLI) core install Heltec-esp8266:esp8266
+	$(ACLI) core install esp32:esp32
 	# $(ACLI) lib install ssd1306
 
 boards:
@@ -45,7 +41,7 @@ monitor:
 
 render:
 	mogrify -resize 14x14 +dither -format xbm images/*.png
-	cat images/*.xbm > images.h
+	cat images/*.xbm > DinoRun/images.h
 
 test: compile
 

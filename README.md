@@ -1,17 +1,5 @@
-# "Arduino" Framework
+# dino run
 
-Currently a mess of code that's trying to reverse dependences
-so multiple libraries can be included.
+The rip-roaring, cactus jumping game.
 
-- async:  non blocking
-- multiple concerns
-- CQRS MVP patterns
-
-
-# todo
-- abstract view
-- cron schedule
-
-
-
-- auto detect board
+See the `Makefile` for build steps.

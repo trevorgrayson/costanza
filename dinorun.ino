@@ -1,45 +1,22 @@
+#include "DinoRun/dinorun.h"
 #include "DinoRun/state.h"
-//#include "time.h"
+#include "DinoRun/view.h"
 
 #define UPDATE_INTERVAL 100
 #define FLASH_BTN 0
 
-State state;
+DinoRunState state;
 
-void start() {
-  //state.frame = millis();
+void setup() {
   pinMode(FLASH_BTN, INPUT);
+  viewSetup();
 }
 
-void (*setups[]) () = { 
-  viewSetup, start, render, viewRender
-};
-
-void tick() {
-  dinorun(&state);
-  // state.flash = !digitalRead(FLASH_BTN); 
-}
-
-void render() {
-  dinoView(state, 1);
-  dinoView(state, 0);
-  viewRender();
-  delay(50);
-}
-
-bool shouldRender() {
-  if (state.frame % UPDATE_INTERVAL == 0) {
-    state.score++;
-    return true;
+void loop() {
+  state.flash = digitalRead(FLASH_BTN);
+  if (state.dinoTop != !state.flash) {
+      state.dirty = 1;
   }
-  return false;
+  state.dinoTop = !state.flash; // 0 or 1
+  bootstrapDinoRun(state);
 }
-
-
-void (*befores[]) () = { 
-};
-
-void (*afters[]) () = { 
-};
-
-#include "framework/framework.h"

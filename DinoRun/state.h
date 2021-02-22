@@ -6,7 +6,9 @@ typedef struct {
   char msg;
   bool dirty = false;
   bool flash = false;
-} State;
+
+  int dinoTop = 0;
+} DinoRunState;
 #endif
 
-void tick(State state);
+void tick(DinoRunState state);
