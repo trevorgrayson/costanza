@@ -1,9 +1,9 @@
 #include "Arduino.h"
 #include "state.h"
 
-void viewSetup();
+void dinoSetup();
 void clear();
 void viewRender();
-void print(String s);
+void hiscore(int value);
 void dinosaur(DinoRunState state);
-void cactus(int16_t offset);
+void cactus(DinoRunState state);

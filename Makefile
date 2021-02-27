@@ -40,7 +40,7 @@ monitor:
 	screen $(PORT) $(BAUD)
 
 render:
-	mogrify -resize 14x14 +dither -format xbm images/*.png
+	mogrify -resize 28x28 +dither -format xbm images/*.png
 	cat images/*.xbm > DinoRun/images.h
 
 test: compile
