@@ -3,6 +3,7 @@
 #define UPDATE_INTERVAL 100
 #define FLASH_BTN 0
 
+DinoRunState previous;
 DinoRunState state;
 
 void setup() {

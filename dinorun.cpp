@@ -9,7 +9,7 @@ int CACTUS_LEFT_MARGIN = 15;
 void progress(DinoRunState *state) {
     for(int x=0; x < 1; x++) {
         if( state->frame % 10 == 0 ) {
-            state->cacti[0]--;
+            state->cacti[0] = state->cacti[0] - state->cactusSpeed;
         }
         if ( state->cacti[x] < -CACTUS_LEFT_MARGIN) {
             state->cacti[x] = 200 + x*5;
@@ -18,23 +18,27 @@ void progress(DinoRunState *state) {
 }
 
 // check if the dino is colliding with a cactus.
-void isDead(DinoRunState *state) {
-    state->fin = state->dinoTop == 0 && \
+bool isDead(DinoRunState *state) {
+    state->fin = \
+        state->dinoTop == 0 &&
         state->cacti[0] < 20 &&
         state->cacti[0] > -10;
+
+    return state->fin;
 }
 
 void dinoRunTick(DinoRunState *state) {
     state->frame++;
-    if(state->frame % 100 == 0) {
-        state->score++;
+    if(!isDead(state)) {
+        if(state->frame % 100 == 0) {
+            state->score++;
+        }
+        progress(state);
     }
     hiscore(state->score);
-    isDead(state);
     dinosaur(*state);
     cactus(*state);
     viewRender();
-    progress(state);
 }
 
 // NOTE: Having a previous state would make

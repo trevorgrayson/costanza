@@ -29,6 +29,8 @@ int SPRITE_HEIGHT = 28;
 int SPRITE_WIDTH  = 28;
 char scoreHUD[] = "HI 000000";
 int b = 0;
+
+
 void dinoSetup() {
     tft.init();
     // tft.begin(); tft.width(); tft.height();
@@ -81,7 +83,7 @@ void cactus(DinoRunState state) {
     cact.drawXBitmap(0, 0, cactus_bits,
                      cactus_width, cactus_height,
                      TFT_BLACK);
-    cact.pushSprite(state.cacti[0] + 1,
+    cact.pushSprite(state.cacti[0] + state.cactusSpeed,
                     HEIGHT - cactus_height
     );
     cact.drawXBitmap(0, 0, cactus_bits,
@@ -91,8 +93,8 @@ void cactus(DinoRunState state) {
                     HEIGHT - cactus_height
                     );
 
-    for (int x=0; x<CACTI_COUNT; x++) {
-    }
+//    for (int x=0; x<CACTI_COUNT; x++) {
+//    }
 }
 
 void viewRender() {
