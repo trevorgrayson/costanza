@@ -6,17 +6,40 @@
 DinoRunState previous;
 DinoRunState state;
 
+int HANG_TIME = 100;
+int buttonFrame = 999999;  // Bug
+bool GROUNDED = false;
+
+bool JUMPING = true;
+bool RUNNING = false;
+
 void setup() {
     pinMode(FLASH_BTN, INPUT);
     dinoSetup();
 }
 
+bool mustFall() {
+    return state.frame - buttonFrame > HANG_TIME;
+}
+
 void readHardware() {
     state.flash = digitalRead(FLASH_BTN);
+    if(state.flash == 1) {
+        GROUNDED = false;
+        buttonFrame = 999999;
+    }
     if (state.dinoTop != !state.flash) {
-        state.dirty = 1;
+        state.dirty = true;
+        buttonFrame = state.frame;
     }
     state.dinoTop = !state.flash; // 0 or 1
+
+    if(mustFall() | GROUNDED) {
+        state.dinoTop = RUNNING;
+        GROUNDED = true;
+    }
+
+    //TODO - only rerender dino if dirty
 }
 
 void loop() {
