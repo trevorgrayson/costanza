@@ -11,8 +11,8 @@ typedef struct {
   bool fin = false;
 
   int dinoTop = 0;
-  int cacti[5] = {200, 0, 0, 0, 0};
-  int cactusSpeed = 5;
+  int cacti[5] = {200, 250, 330, 380, 430};
+  int cactusSpeed = 10;
 } DinoRunState;
 #endif
 

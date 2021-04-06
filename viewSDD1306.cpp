@@ -6,9 +6,18 @@
 
 #include <TFT_eSPI.h>                 // Include the graphics library (this includes the sprite functions)
 
+
 TFT_eSPI    tft = TFT_eSPI();         // Declare object "tft"
 TFT_eSprite dino = TFT_eSprite(&tft);  // Declare Sprite object "spr" with pointer to "tft" object
 TFT_eSprite score = TFT_eSprite(&tft); // Sprite object stext1
+TFT_eSprite cact[] = {
+    TFT_eSprite(&tft),
+    TFT_eSprite(&tft),
+    TFT_eSprite(&tft),
+    TFT_eSprite(&tft),
+    TFT_eSprite(&tft)
+};
+int CACTI_COUNT=4;
 
 // Set delay after plotting the sprite
 #define DELAY 1000
@@ -20,9 +29,6 @@ TFT_eSprite score = TFT_eSprite(&tft); // Sprite object stext1
 int top;
 int dinoTop=0;
 
-int CACTI_COUNT=1;
-int SPEED=1;
-TFT_eSprite cact = TFT_eSprite(&tft);
 int cact_x = WIDTH - cactus_width;
 
 int SPRITE_HEIGHT = 28;
@@ -37,9 +43,9 @@ void dinoSetup() {
     tft.setRotation(3);
     tft.fillScreen(TFT_BLACK);
     dino.createSprite(dinosaur_width, dinosaur_height);
-//    for (int x=0; x<CACTI_COUNT; x++) {
-    cact.createSprite(cactus_width, cactus_height);
-//    }
+    for (int x=0; x<CACTI_COUNT; x++) {
+        cact[x].createSprite(cactus_width, cactus_height);
+    }
 
     // Score HUD
     score.createSprite(WIDTH, 20);
@@ -65,13 +71,15 @@ void dinosaur(DinoRunState state) {
 
     dinoTop = HEIGHT - (1 + state.dinoTop) * SPRITE_HEIGHT;
     if (state.fin) {
-        dino.drawXBitmap(0, 0, dinosaur_bits,
-                         dinosaur_width, dinosaur_height,
-                         TFT_RED);
+        dino.drawXBitmap(
+            0, 0, dinosaur_bits,
+            dinosaur_width, dinosaur_height,
+            TFT_RED);
     } else {
-        dino.drawXBitmap(0, 0, dinosaur_bits,
-                         dinosaur_width, dinosaur_height,
-                         TFT_GREEN);
+        dino.drawXBitmap(
+            0, 0, dinosaur_bits,
+            dinosaur_width, dinosaur_height,
+            TFT_GREEN);
     }
 
     dino.pushSprite(0, dinoTop);
@@ -80,25 +88,26 @@ void dinosaur(DinoRunState state) {
 void cactus(DinoRunState state) {
     // can you do this once at startup?
     dino.fillSprite(TFT_BLACK); // clear last frame
-    cact.drawXBitmap(0, 0, cactus_bits,
-                     cactus_width, cactus_height,
-                     TFT_BLACK);
-    cact.pushSprite(state.cacti[0] + state.cactusSpeed,
-                    HEIGHT - cactus_height
-    );
-    cact.drawXBitmap(0, 0, cactus_bits,
-                     cactus_width, cactus_height,
-                     TFT_GREEN);
-    cact.pushSprite(state.cacti[0],
-                    HEIGHT - cactus_height
-                    );
+    for (int x=0; x<CACTI_COUNT; x++) {
+        cact[x].drawXBitmap(
+            0, 0, cactus_bits,
+            cactus_width, cactus_height,
+            TFT_BLACK);
+        cact[x].pushSprite(
+            state.cacti[x] + state.cactusSpeed,
+            HEIGHT - cactus_height);
 
-//    for (int x=0; x<CACTI_COUNT; x++) {
-//    }
+        cact[x].drawXBitmap(
+            0, 0, cactus_bits,
+            cactus_width, cactus_height,
+            TFT_GREEN);
+        cact[x].pushSprite(
+            state.cacti[x],
+            HEIGHT - cactus_height);
+    }
 }
 
-void viewRender() {
-}
+void viewRender() {}
 
 // spr.setTextDatum(MC_DATUM);
 // spr.drawString("it's a boy", 0, HEIGHT / 2, 4);

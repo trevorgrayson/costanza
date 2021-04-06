@@ -6,7 +6,7 @@
 DinoRunState previous;
 DinoRunState state;
 
-int HANG_TIME = 100;
+int HANG_TIME = 50;
 int buttonFrame = 999999;  // Bug
 bool GROUNDED = false;
 
@@ -38,8 +38,6 @@ void readHardware() {
         state.dinoTop = RUNNING;
         GROUNDED = true;
     }
-
-    //TODO - only rerender dino if dirty
 }
 
 void loop() {
