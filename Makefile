@@ -43,7 +43,9 @@ render:
 	mogrify -resize 28x28 +dither -format xbm images/*.png
 	cat images/*.xbm > DinoRun/images.h
 
-test: compile
+test:
+	gcc -I dinorun/dinorun.cpp test.c
+	./a.out
 
 clean:
 	find . -name '*.o' -delete
